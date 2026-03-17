@@ -3,7 +3,7 @@ using Syncfusion.Pdf.Parsing;
 using Syncfusion.Pdf.Security;
 
 
-//Creates a new PDF document.
+//Load a PDF document.
 using (PdfLoadedDocument loadedDocument = new PdfLoadedDocument(Path.GetFullPath(@"Data/pdf-succinctly.pdf")))
 {
     //Creates a certificate instance from PFX file with private key.
