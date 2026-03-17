@@ -2,7 +2,7 @@
 using Syncfusion.Pdf.Security;
 using Syncfusion.Pdf;
 
-//Load a PDF document.
+//Load existing PDF document.
 using (PdfLoadedDocument loadedDocument = new PdfLoadedDocument(Path.GetFullPath(@"Data/pdf-succinctly.pdf")))
 {
     //Load digital ID with password.

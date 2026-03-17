@@ -1,14 +1,14 @@
 ﻿using Syncfusion.Pdf.Parsing;
 using Syncfusion.Pdf.Security;
 
-//Load a PDF document.
+//Load existing PDF document.
 using (PdfLoadedDocument loadedDocument = new PdfLoadedDocument(Path.GetFullPath(@"Data/pdf-succinctly.pdf")))
 {
-    //Creates a certificate instance from PFX file with private key.
+    //Load digital ID with password.
     FileStream certificateStream = new FileStream(Path.GetFullPath(@"Data/PDF.pfx"), FileMode.Open, FileAccess.Read);
     PdfCertificate pdfCert = new PdfCertificate(certificateStream, "syncfusion");
 
-    //Creates a digital signature.
+    //Create a signature with loaded digital ID.
     PdfSignature signature = new PdfSignature(loadedDocument, loadedDocument.Pages[0], pdfCert, "Signature");
     
     //Save the PDF document
