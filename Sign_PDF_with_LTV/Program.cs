@@ -1,57 +1,35 @@
-﻿using Syncfusion.Drawing;
-using Syncfusion.Pdf;
-using Syncfusion.Pdf.Graphics;
-using Syncfusion.Pdf.Parsing;
+﻿using Syncfusion.Pdf.Parsing;
 using Syncfusion.Pdf.Security;
+using Syncfusion.Pdf;
 
-
-namespace Sign_PDF_with_LTV
+//Creates a new PDF document.
+using (PdfLoadedDocument loadedDocument = new PdfLoadedDocument(Path.GetFullPath(@"Data/pdf-succinctly.pdf")))
 {
-    class Program
+    //Load digital ID with password.
+    FileStream documentStream2 = new FileStream(Path.GetFullPath(@"Data/DigitalSignatureTest.pfx"), FileMode.Open, FileAccess.Read);
+    PdfCertificate certificate = new PdfCertificate(documentStream2, "DigitalPass123");
+    //Create a signature with loaded digital ID.
+    PdfSignature signature = new PdfSignature(loadedDocument, loadedDocument.Pages[0], certificate, "DigitalSignature");
+    signature.Settings.CryptographicStandard = CryptographicStandard.CADES;
+    signature.Settings.DigestAlgorithm = DigestAlgorithm.SHA256;
+
+    //Adds time stamp by using the server URI and credentials.
+    signature.TimeStampServer = new TimeStampServer(new Uri("http://timestamp.digicert.com/"));
+
+    //Create a new Memory Stream
+    MemoryStream Stream = new MemoryStream();
+    //Save the PDF document to memory.
+    loadedDocument.Save(Stream);
+
+    //Load existing PDF document.
+    using (PdfLoadedDocument ltDocument = new PdfLoadedDocument(Stream))
     {
-        static void Main(string[] args)
+        if (ltDocument.Form != null && ltDocument.Form.Fields.Count > 0 && ltDocument.Form.Fields[0] is PdfLoadedSignatureField signatureField)
         {
-            //Load existing PDF document.  
-            using (PdfDocument document = new PdfDocument())
-            {
-                //Adds a new page.
-                PdfPageBase page = document.Pages.Add();
-                //Create graphics for the page. 
-                PdfGraphics graphics = page.Graphics;
-                //Creates a certificate instance from PFX file with private key.
-                FileStream certificateStream = new FileStream(Path.GetFullPath(@"Data/PDF.pfx"), FileMode.Open, FileAccess.Read);
-                PdfCertificate pdfCert = new PdfCertificate(certificateStream, "DigitalPass123");
-                //Creates a digital signature.
-                PdfSignature signature = new PdfSignature(document, page, pdfCert, "Signature");
-                //Adding the digital signature standard and hashing algorithm.
-                signature.Settings.CryptographicStandard = CryptographicStandard.CADES;
-                signature.Settings.DigestAlgorithm = DigestAlgorithm.SHA256;
-                //Add timestamp server link to the signature.
-                signature.TimeStampServer = new TimeStampServer(new Uri("http://timestamp.digicert.com/"));
-                //Create a new Memory Stream
-                MemoryStream memoryStream = new MemoryStream();
-                //Save the PDF document to memory.
-                document.Save(memoryStream);
-                //Close the original document.
-                document.Close(true);
-                //Reset stream position before re-loading.
-                memoryStream.Position = 0;
-                //Load the signed document to update LTV information.
-                PdfLoadedDocument signedDocument = new PdfLoadedDocument(memoryStream);
-                //Get the signed signature field (ensure it exists and is a signature field).
-                if (signedDocument.Form != null && signedDocument.Form.Fields.Count > 0 && signedDocument.Form.Fields[0] is PdfLoadedSignatureField signatureField)
-                {
-                    //Update LTV information.
-                    signatureField.Signature.EnableLtv = true;
-                }
-                //Save the PDF document to a file stream.
-                using (FileStream output = File.Create("SignPDFWithLTV.pdf"))
-                {
-                    signedDocument.Save(output);
-                }
-                //Close the signed document.
-                signedDocument.Close(true);
-            }
+            //Update LTV information.
+            signatureField.Signature.EnableLtv = true;
         }
+        //Save the PDF document.
+        ltDocument.Save(Path.GetFullPath(@"Output/Output.pdf"));
     }
 }

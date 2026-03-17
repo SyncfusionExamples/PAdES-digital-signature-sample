@@ -1,56 +1,24 @@
-﻿
-using Syncfusion.Drawing;
-using Syncfusion.Pdf;
-using Syncfusion.Pdf.Graphics;
+﻿using Syncfusion.Pdf.Parsing;
 using Syncfusion.Pdf.Security;
 
-namespace PDF_digital_signature_with_CAdES
+//Creates a new PDF document.
+using (PdfLoadedDocument loadedDocument = new PdfLoadedDocument(Path.GetFullPath(@"Data/pdf-succinctly.pdf")))
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            //Creates a new PDF document.
-            using (PdfDocument document = new PdfDocument())
-            {
+    //Creates a certificate instance from PFX file with private key.
+    FileStream certificateStream = new FileStream(Path.GetFullPath(@"Data/PDF.pfx"), FileMode.Open, FileAccess.Read);
+    PdfCertificate pdfCert = new PdfCertificate(certificateStream, "syncfusion");
 
-                //Adds a new page.
-                PdfPageBase page = document.Pages.Add();
+    //Creates a digital signature.
+    PdfSignature signature = new PdfSignature(loadedDocument, loadedDocument.Pages[0], pdfCert, "Signature");
 
-                //Create graphics 
-                PdfGraphics graphics = page.Graphics;
+    //Sets signature settings to customize cryptographic standard specified.
+    PdfSignatureSettings settings = signature.Settings;
+    settings.CryptographicStandard = CryptographicStandard.CADES;
+    signature.Settings.DigestAlgorithm = DigestAlgorithm.SHA512;
 
-                //Creates a certificate instance from PFX file with private key.
-                FileStream certificateStream = new FileStream(Path.GetFullPath(@"Data/PDF.pfx"), FileMode.Open, FileAccess.Read);
-                PdfCertificate pdfCert = new PdfCertificate(certificateStream, "syncfusion");
+    //Save the PDF document
+    loadedDocument.Save(Path.GetFullPath(@"Output/Output.pdf"));
 
-                //Creates a digital signature.
-                PdfSignature signature = new PdfSignature(document, page, pdfCert, "Signature");
-
-                //Sets signature settings to customize cryptographic standard specified.
-                PdfSignatureSettings settings = signature.Settings;
-                settings.CryptographicStandard = CryptographicStandard.CADES;
-
-                //Sets an image for signature field.
-                FileStream imageStream = new FileStream(Path.GetFullPath(@"Data/signature.png"), FileMode.Open, FileAccess.Read);
-
-                //Sets an image for signature field.
-                PdfBitmap signatureImage = new PdfBitmap(imageStream);
-
-                //Sets signature information
-                signature.Bounds = new RectangleF(new PointF(0, 0), signatureImage.PhysicalDimension);
-                signature.SignedName = "Syncfusion";
-                signature.ContactInfo = "johndoe@owned.us";
-                signature.LocationInfo = "Honolulu, Hawaii";
-                signature.Reason = "I am author of this document.";
-
-                //Draws the signature image.
-                signature.Appearance.Normal.Graphics.DrawImage(signatureImage, 0, 0);
-
-                // Save the PDF document
-                document.Save(Path.GetFullPath(@"Output/Output.pdf"));
-
-            }
-        }
-    }
+    //Close the document
+    loadedDocument.Close();
 }

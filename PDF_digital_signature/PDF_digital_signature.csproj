@@ -11,7 +11,7 @@
     <PackageReference Include="Syncfusion.Pdf.Net.Core" Version="*" />
   </ItemGroup>
 
-  <ItemGroup>
+ <ItemGroup>
     <None Include="Data\**\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
