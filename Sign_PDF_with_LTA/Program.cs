@@ -21,6 +21,8 @@ using (PdfLoadedDocument loadedDocument = new PdfLoadedDocument(Path.GetFullPath
     MemoryStream memoryStream = new MemoryStream();
     //Save the PDF document to memory.
     loadedDocument.Save(memoryStream);
+    //Close the document
+    loadedDocument.Close(true);
 
     //Load existing PDF document.
     using (PdfLoadedDocument ltDocument = new PdfLoadedDocument(memoryStream))
@@ -37,6 +39,8 @@ using (PdfLoadedDocument loadedDocument = new PdfLoadedDocument(Path.GetFullPath
         timeStamp.TimeStampServer = new TimeStampServer(new Uri("http://timestamp.digicert.com/"));
         //Save the PDF document.
         ltDocument.Save(Path.GetFullPath(@"Output/Output.pdf"));
+        //close the document
+        ltDocument.close(true);
     }
 }
 

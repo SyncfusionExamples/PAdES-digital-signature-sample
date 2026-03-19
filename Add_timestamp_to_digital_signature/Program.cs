@@ -25,6 +25,6 @@ using (PdfLoadedDocument loadedDocument = new PdfLoadedDocument(Path.GetFullPath
     loadedDocument.Save(Path.GetFullPath(@"Output/Output.pdf"));
 
     //Close the document
-    loadedDocument.Close();
+    loadedDocument.Close(true);
 }
 

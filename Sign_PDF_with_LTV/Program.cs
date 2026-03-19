@@ -20,6 +20,8 @@ using (PdfLoadedDocument loadedDocument = new PdfLoadedDocument(Path.GetFullPath
     MemoryStream Stream = new MemoryStream();
     //Save the PDF document to memory.
     loadedDocument.Save(Stream);
+    //Close the document
+    loadedDocument.Close(true);
 
     //Load existing PDF document.
     using (PdfLoadedDocument ltDocument = new PdfLoadedDocument(Stream))
@@ -31,5 +33,7 @@ using (PdfLoadedDocument loadedDocument = new PdfLoadedDocument(Path.GetFullPath
         }
         //Save the PDF document.
         ltDocument.Save(Path.GetFullPath(@"Output/Output.pdf"));
+        //Close the document
+        ltDocument.Close(true);
     }
 }
