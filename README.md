@@ -1,4 +1,4 @@
-# pades-digital-signature-sample
+# PAdES Digital Signature Sample
 
 This repository provides a working example of how to sign PDF files with PAdES‑compliant digital signatures using .NET, demonstrating X.509 certificate‑based signing with both visible and invisible signature appearances, embedding signature metadata directly into the document, and validating long‑term document integrity to meet international PAdES standards, while also illustrating best practices for private key handling and certificate chain management to support compliance‑sensitive and legally regulated PDF‑based workflows.
 
